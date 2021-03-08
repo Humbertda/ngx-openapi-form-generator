@@ -1,0 +1,5 @@
+/dist/*
+/test_output/*
+/node_modules/*
+/.idea/*
+

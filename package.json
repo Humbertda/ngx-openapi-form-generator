@@ -1,0 +1,72 @@
+{
+  "name": "ngx-openapi-form-generator",
+  "version": "1.0.0",
+  "description": "Generates Angular ReactiveForm factories based on a Swagger or OpenAPI definition",
+  "main": "dist/generator-lib.js",
+  "repository": "github:humbertda/ngx-openapi-form-generator",
+  "bin": {
+    "ngx-form-generator": "dist/generator-cli.js"
+  },
+  "scripts": {
+    "test": "npm run build && jasmine dist/*.spec.js",
+    "build": "tsc --project .\\",
+    "lint": "eslint . --ext .ts"
+  },
+  "author": "Dany Humbert <dany.humbert@hanyapps.com> (https://github.com/humbertda)",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "validation",
+    "form",
+    "reactive-forms",
+    "swagger",
+    "openapi",
+    "typescript"
+  ],
+  "devDependencies": {
+    "@commitlint/cli": "^9.1.1",
+    "@commitlint/config-conventional": "^9.1.1",
+    "@types/camelcase": "^4.1.0",
+    "@types/jasmine": "^2.8.9",
+    "@types/node-fetch": "^2.5.5",
+    "@types/prettier": "^1.19.1",
+    "@types/yaml": "^1.2.0",
+    "@types/yargs": "^13.0.8",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
+    "commitiquette": "^1.0.6",
+    "commitizen": "^4.0.4",
+    "conventional-changelog-cli": "^2.0.31",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "husky": "^3.1.0",
+    "jasmine": "^3.2.0",
+    "lint-staged": "^9.5.0",
+    "openapi-types": "^7.0.1",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.0.2",
+    "camelcase": "^5.0.0",
+    "prettier": "^1.19.1",
+    "ts-morph": "^6.0.3",
+    "yaml": "^1.8.3",
+    "yargs": "^15.3.1"
+  },
+  "lint-staged": {
+    "*.{js,css,json,md}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "commitiquette"
+    }
+  }
+}

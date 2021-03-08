@@ -1,0 +1,4221 @@
+{
+  "openapi": "3.0.1",
+  "info": { "version": "v1", "title": "My API" },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "ErrorDetails": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "string containing the message details",
+            "nullable": true
+          },
+          "extendedError": {
+            "type": "string",
+            "description": "string containing the extended error\r\nthis information will only be filled when the user is administrator",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object storing the API error details"
+      },
+      "ApiKeyEntity": {
+        "type": "object",
+        "properties": {
+          "apiKeyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserEntity": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "firebaseUid": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "inscriptionDatetime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastLoginDatetime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "profileDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "hobbies": {
+            "type": "string",
+            "nullable": true
+          },
+          "linkPersonnalWebsite": {
+            "type": "string",
+            "nullable": true
+          },
+          "linkGithub": {
+            "type": "string",
+            "nullable": true
+          },
+          "linkLinkedIn": {
+            "type": "string",
+            "nullable": true
+          },
+          "userAge": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApiKeyDataEntity": {
+        "type": "object",
+        "properties": {
+          "apiKeyId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "apiKey": {
+            "$ref": "#/components/schemas/ApiKeyEntity"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserEntity"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "extensions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RevokeApiKeyModel": {
+        "required": [
+          "apiKey"
+        ],
+        "type": "object",
+        "properties": {
+          "apiKey": {
+            "type": "string",
+            "description": "The ApiKey identifier to revoke"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to revoke an api key"
+      },
+      "CreateFeedSourceModel": {
+        "required": [
+          "feedUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "feedUrl": {
+            "maxLength": 300,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to create a feed source"
+      },
+      "FeedSourceEntity": {
+        "type": "object",
+        "properties": {
+          "feedSourceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nextCheckDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "sourceUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FeedLinkRelationship": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "lowSkillRange": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "highSkillRange": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isDefaultFeedSource": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SkillEntity": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "skillId": {
+            "type": "string",
+            "nullable": true
+          },
+          "denominations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReferSkillDataEntity": {
+        "type": "object",
+        "properties": {
+          "feedLink": {
+            "$ref": "#/components/schemas/FeedLinkRelationship"
+          },
+          "skill": {
+            "$ref": "#/components/schemas/SkillEntity"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ArticleEntity": {
+        "type": "object",
+        "properties": {
+          "articleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "publishedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "shortDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "link": {
+            "type": "string",
+            "nullable": true
+          },
+          "originGuid": {
+            "type": "string",
+            "nullable": true
+          },
+          "categories": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileBlobEntity": {
+        "type": "object",
+        "properties": {
+          "fileBlobId": {
+            "type": "string",
+            "nullable": true
+          },
+          "accessUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "jsonMetadata": {
+            "type": "string",
+            "nullable": true
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "storageHandler": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BlobType": {
+        "enum": [
+          "None",
+          "CoverImage",
+          "Icon"
+        ],
+        "type": "string"
+      },
+      "UseFileRelationship": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/BlobType"
+          },
+          "creationDatetime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileBlobDataEntity": {
+        "type": "object",
+        "properties": {
+          "blob": {
+            "$ref": "#/components/schemas/FileBlobEntity"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UseFileRelationship"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FeedSourceDataEntity": {
+        "type": "object",
+        "properties": {
+          "sourceEntity": {
+            "$ref": "#/components/schemas/FeedSourceEntity"
+          },
+          "referSkills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReferSkillDataEntity"
+            },
+            "nullable": true
+          },
+          "lastPublishedArticle": {
+            "$ref": "#/components/schemas/ArticleEntity"
+          },
+          "blobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileBlobDataEntity"
+            },
+            "nullable": true
+          },
+          "countTotalArticle": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "countTotalFollowers": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CompanyStatus": {
+        "enum": [
+          "New",
+          "Valid",
+          "Blacklist"
+        ],
+        "type": "string"
+      },
+      "CompanyEntity": {
+        "type": "object",
+        "properties": {
+          "otherInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "websiteUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "twitterUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "githubUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/CompanyStatus"
+          },
+          "story": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "industry": {
+            "type": "string",
+            "nullable": true
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AccessLevel": {
+        "enum": [
+          "NoAccess",
+          "Read",
+          "Write",
+          "Owner"
+        ],
+        "type": "string"
+      },
+      "WorksAtRelationship": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "$ref": "#/components/schemas/AccessLevel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WorksAtDataEntity": {
+        "type": "object",
+        "properties": {
+          "companyId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "company": {
+            "$ref": "#/components/schemas/CompanyEntity"
+          },
+          "details": {
+            "$ref": "#/components/schemas/WorksAtRelationship"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Role": {
+        "enum": [
+          "Administrator",
+          "Supervisor",
+          "User",
+          "Publisher",
+          "SuperAdministrator",
+          "SuperPublisher"
+        ],
+        "type": "string"
+      },
+      "UserType": {
+        "enum": [
+          "None",
+          "Candidate",
+          "CompanyPerson"
+        ],
+        "type": "string"
+      },
+      "UserFeedEntity": {
+        "type": "object",
+        "properties": {
+          "userFeedId": {
+            "type": "string",
+            "nullable": true
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "uniqueIdentifier": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SettingEntity": {
+        "type": "object",
+        "properties": {
+          "settingId": {
+            "type": "string",
+            "nullable": true
+          },
+          "jsonContent": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastUpdateDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserDataEntity": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserEntity"
+          },
+          "worksAt": {
+            "$ref": "#/components/schemas/WorksAtDataEntity"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            },
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/UserType"
+          },
+          "feed": {
+            "$ref": "#/components/schemas/UserFeedEntity"
+          },
+          "setting": {
+            "$ref": "#/components/schemas/SettingEntity"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AdminCandidateUpdateModel": {
+        "required": [
+          "birthdate",
+          "email",
+          "firstName",
+          "hobbies",
+          "lastName",
+          "linkGithub",
+          "linkLinkedIn",
+          "linkPersonnalWebsite",
+          "profileDescription",
+          "roles"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "profileDescription": {
+            "type": "string"
+          },
+          "hobbies": {
+            "type": "string"
+          },
+          "linkPersonnalWebsite": {
+            "type": "string"
+          },
+          "linkGithub": {
+            "type": "string"
+          },
+          "linkLinkedIn": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model for update admin candidate"
+      },
+      "CompanyUserDataEntity": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserEntity"
+          },
+          "worksAt": {
+            "$ref": "#/components/schemas/WorksAtRelationship"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CompanyDataEntity": {
+        "type": "object",
+        "properties": {
+          "companyId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "company": {
+            "$ref": "#/components/schemas/CompanyEntity"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompanyUserDataEntity"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AdminCompanyCreateModel": {
+        "required": [
+          "industry",
+          "name",
+          "otherInfo",
+          "size",
+          "status",
+          "story",
+          "websiteUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "otherInfo": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "websiteUrl": {
+            "type": "string"
+          },
+          "twitterUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "githubUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "story": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "industry": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CompanyStatus"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for admin create company"
+      },
+      "AdminCompanyUpdateModel": {
+        "required": [
+          "industry",
+          "name",
+          "otherInfo",
+          "size",
+          "status",
+          "story",
+          "websiteUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "otherInfo": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "websiteUrl": {
+            "type": "string"
+          },
+          "twitterUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "githubUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "story": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "industry": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CompanyStatus"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for admin update company"
+      },
+      "AdminCompanyPersonUpdateModel": {
+        "required": [
+          "birthdate",
+          "email",
+          "firstName",
+          "lastName",
+          "roles"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model for update admin companyPerson"
+      },
+      "SkillLinkedModel": {
+        "type": "object",
+        "properties": {
+          "skillId": {
+            "maxLength": 40,
+            "type": "string",
+            "nullable": true
+          },
+          "lowSkillRange": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "highSkillRange": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isDefaultFeedSource": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AdminEditFeedSourceModel": {
+        "required": [
+          "skillsLinked"
+        ],
+        "type": "object",
+        "properties": {
+          "skillsLinked": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillLinkedModel"
+            },
+            "description": "Skill linked models"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to update an existing feed source"
+      },
+      "QuestionEntity": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "body": {
+            "type": "string",
+            "nullable": true
+          },
+          "jsonContent": {
+            "type": "string",
+            "nullable": true
+          },
+          "answer": {
+            "type": "string",
+            "nullable": true
+          },
+          "helpLink": {
+            "type": "string",
+            "nullable": true
+          },
+          "level": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "publishedOn": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizEntity": {
+        "type": "object",
+        "properties": {
+          "quizId": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizDataEntity": {
+        "type": "object",
+        "properties": {
+          "quiz": {
+            "$ref": "#/components/schemas/QuizEntity"
+          },
+          "skill": {
+            "$ref": "#/components/schemas/SkillEntity"
+          },
+          "questionCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuestionDataEntity": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "$ref": "#/components/schemas/QuestionEntity"
+          },
+          "quiz": {
+            "$ref": "#/components/schemas/QuizDataEntity"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuestionCreateModel": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "body": {
+            "type": "string",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "answer": {
+            "type": "string",
+            "nullable": true
+          },
+          "helpLink": {
+            "type": "string",
+            "nullable": true
+          },
+          "quizId": {
+            "type": "string",
+            "nullable": true
+          },
+          "level": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to create a question"
+      },
+      "QuestionEditModel": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "body": {
+            "type": "string",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "answer": {
+            "type": "string",
+            "nullable": true
+          },
+          "helpLink": {
+            "type": "string",
+            "nullable": true
+          },
+          "level": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to edit a question"
+      },
+      "QuizCreateModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "sillId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to create Quiz"
+      },
+      "BlobItem": {
+        "type": "object",
+        "properties": {
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BlobType"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "accessUrl": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "contentType": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SkillGroupEntity": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "skillGroupId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SkillViewModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "skillId": {
+            "type": "string",
+            "nullable": true
+          },
+          "denominations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "defaultFeedSourceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "blobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BlobItem"
+            },
+            "nullable": true
+          },
+          "skillGroup": {
+            "$ref": "#/components/schemas/SkillGroupEntity"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AdminSkillEditModel": {
+        "required": [
+          "denominations"
+        ],
+        "type": "object",
+        "properties": {
+          "skillGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "denominations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fileBlobId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to edit a skill"
+      },
+      "SkillGroupViewModel": {
+        "type": "object",
+        "properties": {
+          "skillGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SkillGroupCreateModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to create skillGroup"
+      },
+      "Language": {
+        "enum": [
+          "English",
+          "French"
+        ],
+        "type": "string"
+      },
+      "TranslationEditModel": {
+        "required": [
+          "groupName",
+          "key",
+          "language",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "language": {
+            "$ref": "#/components/schemas/Language"
+          },
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "groupName": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to edit translation"
+      },
+      "TranslationEditModels": {
+        "type": "object",
+        "properties": {
+          "models": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranslationEditModel"
+            },
+            "description": "A list of all TranslationEditModel models",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Models to batch edit translation"
+      },
+      "TranslationGetModel": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of all keys to retrieve",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to retrieve specific translations"
+      },
+      "TranslationImportAll": {
+        "type": "object",
+        "properties": {
+          "models": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "English": {
+                    "type": "string"
+                  },
+                  "French": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "description": "Translations models",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Models to batch import translations"
+      },
+      "AdminUserUpdateModel": {
+        "required": [
+          "birthdate",
+          "email",
+          "firstName",
+          "lastName",
+          "roles"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for update user\r\nadministrator version"
+      },
+      "UserFeedSourceViewModel": {
+        "type": "object",
+        "properties": {
+          "unreadCount": {
+            "type": "integer",
+            "description": "Number of unread article in this source",
+            "format": "int64",
+            "readOnly": true
+          },
+          "structurePath": {
+            "type": "string",
+            "description": "User structure path for display",
+            "nullable": true,
+            "readOnly": true
+          },
+          "customName": {
+            "type": "string",
+            "description": "User custom name for display",
+            "nullable": true,
+            "readOnly": true
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Skill ids in a list",
+            "nullable": true,
+            "readOnly": true
+          },
+          "blobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BlobItem"
+            },
+            "description": "Blob store for the user feed",
+            "nullable": true,
+            "readOnly": true
+          },
+          "feedSourceId": {
+            "type": "string",
+            "description": "Feed source id",
+            "nullable": true
+          },
+          "sourceUrl": {
+            "type": "string",
+            "description": "Source url",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Models to represent a UserFeedSource"
+      },
+      "UserFeedViewModel": {
+        "type": "object",
+        "properties": {
+          "userFeedId": {
+            "type": "string",
+            "description": "User feed id",
+            "nullable": true
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserFeedSourceViewModel"
+            },
+            "description": "List of all sources",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to represent a full user feed"
+      },
+      "AddFollowFeedModel": {
+        "required": [
+          "customName",
+          "feedUrl",
+          "structurePath"
+        ],
+        "type": "object",
+        "properties": {
+          "feedUrl": {
+            "maxLength": 300,
+            "type": "string"
+          },
+          "customName": {
+            "maxLength": 80,
+            "type": "string"
+          },
+          "structurePath": {
+            "maxLength": 300,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to follow a new feed"
+      },
+      "EditFollowFeedModel": {
+        "required": [
+          "customName",
+          "feedSourceId",
+          "structurePath"
+        ],
+        "type": "object",
+        "properties": {
+          "feedSourceId": {
+            "maxLength": 40,
+            "type": "string"
+          },
+          "customName": {
+            "maxLength": 80,
+            "type": "string"
+          },
+          "structurePath": {
+            "maxLength": 300,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to edit a follow feed"
+      },
+      "StopFollowFeedModel": {
+        "required": [
+          "feedSourceId"
+        ],
+        "type": "object",
+        "properties": {
+          "feedSourceId": {
+            "maxLength": 40,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to stop a follow feed"
+      },
+      "DiplomaLevel": {
+        "enum": [
+          "Deust",
+          "Doctorate",
+          "Licence",
+          "Master",
+          "Bachelor"
+        ],
+        "type": "string"
+      },
+      "DiplomaEntity": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "diplomaId": {
+            "type": "string",
+            "nullable": true
+          },
+          "level": {
+            "$ref": "#/components/schemas/DiplomaLevel"
+          },
+          "obtentionYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "speciality": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SchoolEntity": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "schoolId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CandidateDiplomaDataEntity": {
+        "type": "object",
+        "properties": {
+          "diploma": {
+            "$ref": "#/components/schemas/DiplomaEntity"
+          },
+          "school": {
+            "$ref": "#/components/schemas/SchoolEntity"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CandidateDiplomaEditModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "type": "string",
+            "nullable": true
+          },
+          "level": {
+            "$ref": "#/components/schemas/DiplomaLevel"
+          },
+          "obtentionYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "speciality": {
+            "maxLength": 200,
+            "type": "string",
+            "nullable": true
+          },
+          "schoolId": {
+            "maxLength": 40,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to edit candidate diploma"
+      },
+      "CandidateDiplomaCreateModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "type": "string",
+            "nullable": true
+          },
+          "level": {
+            "$ref": "#/components/schemas/DiplomaLevel"
+          },
+          "obtentionYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "speciality": {
+            "maxLength": 200,
+            "type": "string",
+            "nullable": true
+          },
+          "schoolId": {
+            "maxLength": 40,
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to create candidate diploma"
+      },
+      "ExperienceEntity": {
+        "type": "object",
+        "properties": {
+          "experienceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "salaryYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "jobTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CandidateExperienceDataEntity": {
+        "type": "object",
+        "properties": {
+          "experience": {
+            "$ref": "#/components/schemas/ExperienceEntity"
+          },
+          "company": {
+            "$ref": "#/components/schemas/CompanyEntity"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CandidateExperienceEditModel": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "salaryYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "jobTitle": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "maxLength": 2500,
+            "type": "string",
+            "nullable": true
+          },
+          "companyId": {
+            "maxLength": 40,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to edit experience"
+      },
+      "CandidateExperienceCreateModel": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "salaryYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "jobTitle": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "maxLength": 2500,
+            "type": "string",
+            "nullable": true
+          },
+          "companyId": {
+            "maxLength": 40,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to create experience"
+      },
+      "Point": {
+        "type": "object",
+        "properties": {
+          "srId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "x": {
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "type": "number",
+            "format": "double"
+          },
+          "z": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CityEntity": {
+        "type": "object",
+        "properties": {
+          "cityId": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "zipCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "$ref": "#/components/schemas/Point"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CountryEntity": {
+        "type": "object",
+        "properties": {
+          "iso2Code": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PostEntity": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "creationDatetime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updateDatetime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SkillRequestStatus": {
+        "enum": [
+          "Waiting",
+          "Reviewed"
+        ],
+        "type": "string"
+      },
+      "RequestEntity": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SkillRequestStatus"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CandidateSkillDataEntity": {
+        "type": "object",
+        "properties": {
+          "skill": {
+            "$ref": "#/components/schemas/SkillEntity"
+          },
+          "post": {
+            "$ref": "#/components/schemas/PostEntity"
+          },
+          "requests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RequestEntity"
+            },
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DiplomaDataEntity": {
+        "type": "object",
+        "properties": {
+          "diploma": {
+            "$ref": "#/components/schemas/DiplomaEntity"
+          },
+          "school": {
+            "$ref": "#/components/schemas/SchoolEntity"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CandidateProfileStatsDataEntity": {
+        "type": "object",
+        "properties": {
+          "articleReadCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "questionAnswerCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "questionCorrectAnswerCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CandidateProfileDataEntity": {
+        "type": "object",
+        "properties": {
+          "candidate": {
+            "$ref": "#/components/schemas/UserEntity"
+          },
+          "city": {
+            "$ref": "#/components/schemas/CityEntity"
+          },
+          "country": {
+            "$ref": "#/components/schemas/CountryEntity"
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CandidateSkillDataEntity"
+            },
+            "nullable": true
+          },
+          "experiences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CandidateExperienceDataEntity"
+            },
+            "nullable": true
+          },
+          "diplomas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DiplomaDataEntity"
+            },
+            "nullable": true
+          },
+          "candidateProfileStats": {
+            "$ref": "#/components/schemas/CandidateProfileStatsDataEntity"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddressComponentType": {
+        "enum": [
+          "unknown",
+          "street_address",
+          "route",
+          "intersection",
+          "political",
+          "country",
+          "administrative_area_level_1",
+          "administrative_area_level_2",
+          "administrative_area_level_3",
+          "administrative_area_level_4",
+          "administrative_area_level_5",
+          "colloquial_area",
+          "locality",
+          "ward",
+          "sublocality",
+          "sublocality_level_1",
+          "sublocality_level_2",
+          "sublocality_level_3",
+          "sublocality_level_4",
+          "sublocality_level_5",
+          "neighborhood",
+          "premise",
+          "subpremise",
+          "postal_code",
+          "natural_feature",
+          "airport",
+          "park",
+          "floor",
+          "establishment",
+          "point_of_interest",
+          "parking",
+          "post_box",
+          "postal_town",
+          "room",
+          "street_number",
+          "bus_station",
+          "train_station",
+          "transit_station",
+          "geocode",
+          "postal_code_prefix",
+          "postal_code_suffix"
+        ],
+        "type": "string"
+      },
+      "AddressComponent": {
+        "type": "object",
+        "properties": {
+          "short_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "long_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddressComponentType"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "format": "double"
+          },
+          "lng": {
+            "type": "number",
+            "format": "double"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ViewPort": {
+        "type": "object",
+        "properties": {
+          "southwest": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "northeast": {
+            "$ref": "#/components/schemas/Location"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GeometryLocationType": {
+        "enum": [
+          "ROOFTOP",
+          "RANGE_INTERPOLATED",
+          "GEOMETRIC_CENTER",
+          "APPROXIMATE"
+        ],
+        "type": "string"
+      },
+      "Geometry": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "bounds": {
+            "$ref": "#/components/schemas/ViewPort"
+          },
+          "viewport": {
+            "$ref": "#/components/schemas/ViewPort"
+          },
+          "location_type": {
+            "$ref": "#/components/schemas/GeometryLocationType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DayTime": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "time": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Period": {
+        "type": "object",
+        "properties": {
+          "open": {
+            "$ref": "#/components/schemas/DayTime"
+          },
+          "close": {
+            "$ref": "#/components/schemas/DayTime"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OpeningHours": {
+        "type": "object",
+        "properties": {
+          "open_now": {
+            "type": "boolean"
+          },
+          "periods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Period"
+            },
+            "nullable": true
+          },
+          "weekday_text": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Photo": {
+        "type": "object",
+        "properties": {
+          "photo_reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "html_attributions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PriceLevel": {
+        "enum": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "type": "string"
+      },
+      "BusinessStatus": {
+        "enum": [
+          "Operational",
+          "Closed_Temporarily",
+          "Closed_Permanently"
+        ],
+        "type": "string"
+      },
+      "AspectRating": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "rating": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Aspect": {
+        "type": "object",
+        "properties": {
+          "aspects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AspectRating"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Review": {
+        "type": "object",
+        "properties": {
+          "aspect": {
+            "$ref": "#/components/schemas/Aspect"
+          },
+          "author_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "author_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "nullable": true
+          },
+          "rating": {
+            "type": "number",
+            "format": "double"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "profile_photo_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "relative_time_description": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "time": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlaceLocationType": {
+        "enum": [
+          "unknown",
+          "geocode",
+          "street_address",
+          "route",
+          "intersection",
+          "political",
+          "country",
+          "administrative_area_level_1",
+          "administrative_area_level_2",
+          "administrative_area_level_3",
+          "administrative_area_level_4",
+          "administrative_area_level_5",
+          "colloquial_area",
+          "locality",
+          "sublocality",
+          "sublocality_level_1",
+          "sublocality_level_2",
+          "sublocality_level_3",
+          "sublocality_level_4",
+          "sublocality_level_5",
+          "neighborhood",
+          "premise",
+          "subpremise",
+          "postal_code",
+          "postal_code_prefix",
+          "postal_code_suffix",
+          "natural_feature",
+          "point_of_interest",
+          "floor",
+          "post_box",
+          "postal_town",
+          "room",
+          "street_number",
+          "transit_station",
+          "accounting",
+          "airport",
+          "amusement_park",
+          "aquarium",
+          "art_gallery",
+          "atm",
+          "bakery",
+          "bank",
+          "bar",
+          "beauty_salon",
+          "bicycle_store",
+          "book_store",
+          "bowling_alley",
+          "bus_station",
+          "cafe",
+          "campground",
+          "car_dealer",
+          "car_rental",
+          "car_repair",
+          "car_wash",
+          "casino",
+          "cemetery",
+          "church",
+          "city_hall",
+          "clothing_store",
+          "convenience_store",
+          "courthouse",
+          "dentist",
+          "department_store",
+          "doctor",
+          "electrician",
+          "electronics_store",
+          "embassy",
+          "establishment",
+          "finance",
+          "fire_station",
+          "florist",
+          "food",
+          "funeral_home",
+          "furniture_store",
+          "gas_station",
+          "general_contractor",
+          "supermarket",
+          "grocery_or_supermarket",
+          "gym",
+          "hair_care",
+          "hardware_store",
+          "health",
+          "hindu_temple",
+          "home_goods_store",
+          "hospital",
+          "insurance_agency",
+          "jewelry_store",
+          "laundry",
+          "lawyer",
+          "library",
+          "liquor_store",
+          "local_government_office",
+          "locksmith",
+          "lodging",
+          "meal_delivery",
+          "meal_takeaway",
+          "mosque",
+          "movie_rental",
+          "movie_theater",
+          "moving_company",
+          "museum",
+          "night_club",
+          "painter",
+          "park",
+          "parking",
+          "pet_store",
+          "pharmacy",
+          "physiotherapist",
+          "place_of_worship",
+          "plumber",
+          "police",
+          "post_office",
+          "real_estate_agency",
+          "restaurant",
+          "roofing_contractor",
+          "rv_park",
+          "school",
+          "shoe_store",
+          "shopping_mall",
+          "spa",
+          "stadium",
+          "storage",
+          "store",
+          "subway_station",
+          "synagogue",
+          "tourist_attraction",
+          "taxi_stand",
+          "train_station",
+          "travel_agency",
+          "university",
+          "veterinary_care",
+          "zoo"
+        ],
+        "type": "string"
+      },
+      "DetailsResult": {
+        "type": "object",
+        "properties": {
+          "address_components": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddressComponent"
+            },
+            "nullable": true
+          },
+          "formatted_address": {
+            "type": "string",
+            "nullable": true
+          },
+          "formatted_phone_number": {
+            "type": "string",
+            "nullable": true
+          },
+          "adr_address": {
+            "type": "string",
+            "nullable": true
+          },
+          "geometry": {
+            "$ref": "#/components/schemas/Geometry"
+          },
+          "icon": {
+            "type": "string",
+            "nullable": true
+          },
+          "international_phone_number": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "opening_hours": {
+            "$ref": "#/components/schemas/OpeningHours"
+          },
+          "place_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Photo"
+            },
+            "nullable": true
+          },
+          "price_level": {
+            "$ref": "#/components/schemas/PriceLevel"
+          },
+          "business_status": {
+            "$ref": "#/components/schemas/BusinessStatus"
+          },
+          "rating": {
+            "type": "number",
+            "format": "double"
+          },
+          "user_ratings_total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reviews": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Review"
+            },
+            "nullable": true
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaceLocationType"
+            },
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "vicinity": {
+            "type": "string",
+            "nullable": true
+          },
+          "utc_offset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "website": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Status": {
+        "enum": [
+          "Undefined",
+          "OK",
+          "ZERO_RESULTS",
+          "OVER_QUERY_LIMIT",
+          "REQUEST_DENIED",
+          "INVALID_REQUEST",
+          "MAX_ELEMENTS_EXCEEDED",
+          "MAX_WAYPOINTS_EXCEEDED",
+          "NOT_FOUND",
+          "UNKNOWN_ERROR",
+          "HTTP_ERROR",
+          "NO_API_KEY"
+        ],
+        "type": "string"
+      },
+      "PlacesDetailsResponse": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/DetailsResult"
+          },
+          "rawJson": {
+            "type": "string",
+            "nullable": true
+          },
+          "rawQueryString": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "error_message": {
+            "type": "string",
+            "nullable": true
+          },
+          "html_attributions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CandidateProfileEditModel": {
+        "type": "object",
+        "properties": {
+          "experienceId": {
+            "maxLength": 40,
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "placesDetailsResponse": {
+            "$ref": "#/components/schemas/PlacesDetailsResponse"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to edit basic candidate profile info"
+      },
+      "CandidateSkillEditModel": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": ""
+      },
+      "CandidateSkillCreateModel": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "skillId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to create candidate skill"
+      },
+      "CompanyEditModel": {
+        "required": [
+          "githubUrl",
+          "industry",
+          "name",
+          "otherInfo",
+          "size",
+          "story",
+          "twitterUrl",
+          "websiteUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "otherInfo": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "websiteUrl": {
+            "type": "string"
+          },
+          "twitterUrl": {
+            "type": "string"
+          },
+          "githubUrl": {
+            "type": "string"
+          },
+          "story": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "industry": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to edit company"
+      },
+      "CompanyCreateModel": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "otherInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "websiteUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "twitterUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "githubUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "story": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "industry": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for create company"
+      },
+      "InvitationType": {
+        "enum": [
+          "Unknown",
+          "Company"
+        ],
+        "type": "string"
+      },
+      "InvitationEntity": {
+        "type": "object",
+        "properties": {
+          "invitationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "validUntilDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "usageLeft": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvitationDataEntity": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/InvitationType"
+          },
+          "invitationId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "invitation": {
+            "$ref": "#/components/schemas/InvitationEntity"
+          },
+          "company": {
+            "$ref": "#/components/schemas/CompanyEntity"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvitationForCompanyCreateModel": {
+        "type": "object",
+        "properties": {
+          "validUntilDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "usageLeft": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to create a new invitation for a company"
+      },
+      "ValidateFeedUrlModel": {
+        "required": [
+          "urlToValidate"
+        ],
+        "type": "object",
+        "properties": {
+          "urlToValidate": {
+            "maxLength": 300,
+            "type": "string",
+            "description": "The URL to validate"
+          },
+          "numberOfArticleToGet": {
+            "type": "integer",
+            "description": "Number of article to get",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to call Feed URL validation"
+      },
+      "IArticleModel": {
+        "type": "object",
+        "properties": {
+          "publishedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "shortDescription": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "categories": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "originGuid": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "link": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FollowRelationship": {
+        "type": "object",
+        "properties": {
+          "unreadCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastReadAllOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "structurePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "customName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidateFeedUrlResult": {
+        "type": "object",
+        "properties": {
+          "inputUrl": {
+            "type": "string",
+            "description": "The input URL",
+            "nullable": true
+          },
+          "correctUrl": {
+            "type": "string",
+            "description": "The correct URL after validation",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "description": "Simple valid property"
+          },
+          "articles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IArticleModel"
+            },
+            "description": "Last articles from this feed",
+            "nullable": true
+          },
+          "existingFeedSourceId": {
+            "type": "string",
+            "description": "Existing FeedSource identifier if exists",
+            "nullable": true
+          },
+          "blogName": {
+            "type": "string",
+            "description": "Feed source Blog name",
+            "nullable": true
+          },
+          "blogDescription": {
+            "type": "string",
+            "description": "Feed source Blog description",
+            "nullable": true
+          },
+          "existingUserFollow": {
+            "$ref": "#/components/schemas/FollowRelationship"
+          },
+          "faviconUrl": {
+            "type": "string",
+            "description": "Favicon Url",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Result model of Feed URL validation"
+      },
+      "FeedSourceSearchOption": {
+        "required": [
+          "chunkSize"
+        ],
+        "type": "object",
+        "properties": {
+          "chunkSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "searchToken": {
+            "maxLength": 300,
+            "type": "string",
+            "nullable": true
+          },
+          "feedSourceNameWeight": {
+            "type": "number",
+            "format": "double"
+          },
+          "feedSourceUrlWeight": {
+            "type": "number",
+            "format": "double"
+          },
+          "feedSourceDescriptionWeight": {
+            "type": "number",
+            "format": "double"
+          },
+          "feedSourceSkillWeight": {
+            "type": "number",
+            "format": "double"
+          },
+          "feedSourceTotalFollowersWeight": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Options for search for feed sources"
+      },
+      "Language": {
+        "enum": [
+          "Arabic",
+          "Bulgarian",
+          "Bengali",
+          "Catalan",
+          "Czech",
+          "Danish",
+          "German",
+          "Greek",
+          "English",
+          "EnglishAustralian",
+          "EnglishGreatBritain",
+          "Spanish",
+          "Basque",
+          "Farsi",
+          "Finnish",
+          "Filipino",
+          "French",
+          "Galician",
+          "Gujarati",
+          "Hindi",
+          "Croatian",
+          "Hungarian",
+          "Indonesian",
+          "Italian",
+          "Hebrew",
+          "Japanese",
+          "Kannada",
+          "Korean",
+          "Lithuanian",
+          "Latvian",
+          "Malayalam",
+          "Marathi",
+          "Dutch",
+          "Norwegian",
+          "Polish",
+          "Portuguese",
+          "PortugueseBrazil",
+          "PortuguesePortugal",
+          "Romanian",
+          "Russian",
+          "Slovak",
+          "Slovenian",
+          "Serbian",
+          "Swedish",
+          "Tamil",
+          "Telugu",
+          "Thai",
+          "Tagalog",
+          "Turkish",
+          "Ukrainian",
+          "Vietnamese",
+          "ChineseSimplified",
+          "ChineseTraditional"
+        ],
+        "type": "string"
+      },
+      "RestrictPlaceType": {
+        "enum": [
+          "Geocode",
+          "Address",
+          "Establishment",
+          "Regions",
+          "Cities"
+        ],
+        "type": "string"
+      },
+      "Component": {
+        "enum": [
+          "Route",
+          "Locality",
+          "Administrative_Area",
+          "Postal_Code",
+          "Country"
+        ],
+        "type": "string"
+      },
+      "ComponentStringKeyValuePair": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "$ref": "#/components/schemas/Component"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlacesAutoCompleteRequest": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string",
+            "nullable": true
+          },
+          "offset": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessionToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "radius": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "strictbounds": {
+            "type": "boolean"
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language"
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestrictPlaceType"
+            },
+            "nullable": true
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComponentStringKeyValuePair"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MatchedSubstring": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "string",
+            "nullable": true
+          },
+          "length": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StructuredFormatting": {
+        "type": "object",
+        "properties": {
+          "main_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "main_text_matched_substrings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchedSubstring"
+            },
+            "nullable": true
+          },
+          "secondary_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "secondary_text_matched_substrings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchedSubstring"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Term": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "offset": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Prediction": {
+        "type": "object",
+        "properties": {
+          "place_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "structured_formatting": {
+            "$ref": "#/components/schemas/StructuredFormatting"
+          },
+          "terms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Term"
+            },
+            "nullable": true
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaceLocationType"
+            },
+            "nullable": true
+          },
+          "matched_substrings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchedSubstring"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlacesAutoCompleteResponse": {
+        "type": "object",
+        "properties": {
+          "predictions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Prediction"
+            },
+            "nullable": true
+          },
+          "rawJson": {
+            "type": "string",
+            "nullable": true
+          },
+          "rawQueryString": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "error_message": {
+            "type": "string",
+            "nullable": true
+          },
+          "html_attributions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FieldTypes": {
+        "enum": [
+          "Address_Component",
+          "Adr_Address",
+          "Formatted_Address",
+          "Geometry",
+          "Icon",
+          "Id",
+          "Name",
+          "Photo",
+          "Place_Id",
+          "Plus_Code",
+          "Type",
+          "Url",
+          "Utc_Offset",
+          "Vicinity",
+          "Formatted_Phone_Number",
+          "International_Phone_Number",
+          "Opening_Hours",
+          "Website",
+          "Contact",
+          "Price_Level",
+          "Rating",
+          "Review",
+          "User_Ratings_Total",
+          "Atmosphere",
+          "Business_Status",
+          "Basic"
+        ],
+        "type": "string"
+      },
+      "Extensions": {
+        "enum": [
+          "None",
+          "ReviewSummary"
+        ],
+        "type": "string"
+      },
+      "FilterType": {
+        "enum": [
+          "Equal",
+          "Different",
+          "MatchRegex",
+          "StartWith",
+          "Lower",
+          "LowerOrEqual",
+          "Greater",
+          "GreaterOrEqual",
+          "Contains",
+          "In"
+        ],
+        "type": "string"
+      },
+      "StringFilter": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/FilterType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ObjectFilter": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "object",
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/FilterType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetUserArticleFilter": {
+        "type": "object",
+        "properties": {
+          "structurePath": {
+            "$ref": "#/components/schemas/StringFilter"
+          },
+          "feedSourceId": {
+            "$ref": "#/components/schemas/ObjectFilter"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserArticleFetchOption": {
+        "required": [
+          "chunkSize"
+        ],
+        "type": "object",
+        "properties": {
+          "chunkSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "afterArticleId": {
+            "maxLength": 40,
+            "type": "string",
+            "nullable": true
+          },
+          "filters": {
+            "$ref": "#/components/schemas/GetUserArticleFilter"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Options for fetch user articles"
+      },
+      "UserArticleSmallModel": {
+        "type": "object",
+        "properties": {
+          "feedSourceId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "articleId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "publishedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "shortDescription": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "categories": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "wasRead": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "blobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BlobItem"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserArticleFullModel": {
+        "type": "object",
+        "properties": {
+          "feedSourceId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "articleId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "publishedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "shortDescription": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "categories": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "wasRead": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "link": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "blobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BlobItem"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetUserQuestionFilter": {
+        "type": "object",
+        "properties": {
+          "skillId": {
+            "$ref": "#/components/schemas/ObjectFilter"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserQuestionFetchOption": {
+        "required": [
+          "chunkSize"
+        ],
+        "type": "object",
+        "properties": {
+          "chunkSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "afterQuestionId": {
+            "maxLength": 40,
+            "type": "string",
+            "nullable": true
+          },
+          "filters": {
+            "$ref": "#/components/schemas/GetUserQuestionFilter"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Options for fetch user questions"
+      },
+      "UserQuestionModel": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "body": {
+            "type": "string",
+            "nullable": true
+          },
+          "jsonContent": {
+            "type": "string",
+            "nullable": true
+          },
+          "helpLink": {
+            "type": "string",
+            "nullable": true
+          },
+          "level": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "skillId": {
+            "type": "string",
+            "nullable": true
+          },
+          "wasRead": {
+            "type": "boolean"
+          },
+          "wasAnswered": {
+            "type": "boolean"
+          },
+          "answer": {
+            "type": "string",
+            "nullable": true
+          },
+          "correct": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvitationEditModel": {
+        "type": "object",
+        "properties": {
+          "validUntilDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "usageLeft": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to edit an invitation"
+      },
+      "CreateIssueRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "confidential": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "assignee_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "milestone_id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "due_date": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "merge_request_to_resolve_discussions_of": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "discussion_to_resolve": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "weight": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Assignee": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatar_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "web_url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MilestoneState": {
+        "enum": [
+          "Active",
+          "Closed",
+          "All"
+        ],
+        "type": "string"
+      },
+      "Milestone": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "due_date": {
+            "type": "string",
+            "nullable": true
+          },
+          "start_date": {
+            "type": "string",
+            "nullable": true
+          },
+          "project_id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "group_id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "web_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "$ref": "#/components/schemas/MilestoneState"
+          },
+          "iid": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClosedBy": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "string",
+            "nullable": true
+          },
+          "web_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatar_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "iid": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IssueState": {
+        "enum": [
+          "Opened",
+          "Closed",
+          "All"
+        ],
+        "type": "string"
+      },
+      "IssueTimeStatistic": {
+        "type": "object",
+        "properties": {
+          "time_estimate": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total_time_spent": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "human_time_estimate": {
+            "type": "string",
+            "nullable": true
+          },
+          "human_total_time_spent": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IssueTaskCompletionStatus": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "completed_count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Issue": {
+        "type": "object",
+        "properties": {
+          "confidential": {
+            "type": "boolean"
+          },
+          "assignees": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Assignee"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "assignee": {
+            "$ref": "#/components/schemas/Assignee"
+          },
+          "author": {
+            "$ref": "#/components/schemas/Assignee"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "due_date": {
+            "type": "string",
+            "nullable": true
+          },
+          "project_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "milestone": {
+            "$ref": "#/components/schemas/Milestone"
+          },
+          "closed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "closed_by": {
+            "$ref": "#/components/schemas/ClosedBy"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "user_notes_count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "state": {
+            "$ref": "#/components/schemas/IssueState"
+          },
+          "web_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "weight": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "time_stats": {
+            "$ref": "#/components/schemas/IssueTimeStatistic"
+          },
+          "task_completion_status": {
+            "$ref": "#/components/schemas/IssueTaskCompletionStatus"
+          },
+          "iid": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ContractType": {
+        "enum": [
+          "Permanent",
+          "FixedTerm"
+        ],
+        "type": "string"
+      },
+      "JobEntity": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "nullable": true
+          },
+          "availabilityStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "contractType": {
+            "$ref": "#/components/schemas/ContractType"
+          },
+          "endingHour": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startingHour": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "flexibleHours": {
+            "type": "boolean"
+          },
+          "fullRemote": {
+            "type": "boolean"
+          },
+          "jobTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxSalary": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minSalary": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minDiplomaLevel": {
+            "$ref": "#/components/schemas/DiplomaLevel"
+          },
+          "mission": {
+            "type": "string",
+            "nullable": true
+          },
+          "onlyCandidatesHavingPermitToWork": {
+            "type": "boolean"
+          },
+          "remoteRange": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SkillRequiredImportance": {
+        "enum": [
+          "Mandatory",
+          "NiceToHave"
+        ],
+        "type": "string"
+      },
+      "SkillRequiredLevel": {
+        "enum": [
+          "Expert",
+          "Confirmed",
+          "Beginner"
+        ],
+        "type": "string"
+      },
+      "RequireSkillEntity": {
+        "type": "object",
+        "properties": {
+          "yearExperience": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "importance": {
+            "$ref": "#/components/schemas/SkillRequiredImportance"
+          },
+          "level": {
+            "$ref": "#/components/schemas/SkillRequiredLevel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RequireSkillDataEntity": {
+        "type": "object",
+        "properties": {
+          "requireSkill": {
+            "$ref": "#/components/schemas/RequireSkillEntity"
+          },
+          "skill": {
+            "$ref": "#/components/schemas/SkillEntity"
+          }
+        },
+        "additionalProperties": false
+      },
+      "JobDataEntity": {
+        "type": "object",
+        "properties": {
+          "job": {
+            "$ref": "#/components/schemas/JobEntity"
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RequireSkillDataEntity"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MeResult": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserDataEntity"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response model me /me endpoint"
+      },
+      "CandidateCreateModel": {
+        "required": [
+          "email",
+          "firstName",
+          "hobbies",
+          "lastName",
+          "linkGithub",
+          "linkLinkedIn",
+          "linkPersonnalWebsite",
+          "profileDescription"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "maxLength": 250,
+            "type": "string",
+            "format": "email"
+          },
+          "lastName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "firstName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "profileDescription": {
+            "maxLength": 2500,
+            "type": "string"
+          },
+          "hobbies": {
+            "maxLength": 1000,
+            "type": "string"
+          },
+          "linkPersonnalWebsite": {
+            "maxLength": 300,
+            "type": "string"
+          },
+          "linkGithub": {
+            "maxLength": 300,
+            "type": "string"
+          },
+          "linkLinkedIn": {
+            "maxLength": 300,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for create candidate"
+      },
+      "UserCreateModel": {
+        "required": [
+          "birthdate",
+          "email",
+          "firstName",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "maxLength": 250,
+            "type": "string",
+            "format": "email"
+          },
+          "lastName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "firstName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for create user"
+      },
+      "CompanyPersonCreateModel": {
+        "required": [
+          "birthdate",
+          "companyIndustry",
+          "companyName",
+          "email",
+          "firstName",
+          "lastName",
+          "positionInCompany"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "maxLength": 250,
+            "type": "string",
+            "format": "email"
+          },
+          "lastName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "firstName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "companyName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "companyIndustry": {
+            "maxLength": 300,
+            "type": "string"
+          },
+          "positionInCompany": {
+            "maxLength": 250,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for create company person"
+      },
+      "CompanyPersonInvitedModel": {
+        "required": [
+          "birthdate",
+          "email",
+          "firstName",
+          "invitationId",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "invitationId": {
+            "type": "string"
+          },
+          "email": {
+            "maxLength": 250,
+            "type": "string",
+            "format": "email"
+          },
+          "lastName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "firstName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to register a company person with an invitation"
+      },
+      "UserEditModel": {
+        "required": [
+          "birthdate",
+          "email",
+          "firstName",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "maxLength": 250,
+            "type": "string",
+            "format": "email"
+          },
+          "lastName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "firstName": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to edit model"
+      },
+      "LeaveReasonCreateModel": {
+        "required": [
+          "comment",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "reason": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "comment": {
+            "maxLength": 2500,
+            "type": "string"
+          },
+          "deactivate": {
+            "type": "boolean"
+          },
+          "delete": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for user leave reason"
+      },
+      "SettingEditModel": {
+        "required": [
+          "jsonContent"
+        ],
+        "type": "object",
+        "properties": {
+          "jsonContent": {
+            "maxLength": 2500,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to edit user settings"
+      },
+      "UserCompanyCreateModel": {
+        "required": [
+          "industry",
+          "name",
+          "placesDetailsResponse"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "industry": {
+            "type": "string"
+          },
+          "placesDetailsResponse": {
+            "$ref": "#/components/schemas/PlacesDetailsResponse"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for user to create company"
+      },
+      "CompanyPersonWorksAtEditModel": {
+        "required": [
+          "position",
+          "role"
+        ],
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/AccessLevel"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for edit company person works at relationship"
+      },
+      "FollowFeedBatch": {
+        "required": [
+          "models"
+        ],
+        "type": "object",
+        "properties": {
+          "models": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddFollowFeedModel"
+            },
+            "description": "A list of all feeds to follow  models"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Models to follow a batch of feeds"
+      },
+      "MarkFeedReadModel": {
+        "required": [
+          "feedSourceId"
+        ],
+        "type": "object",
+        "properties": {
+          "feedSourceId": {
+            "maxLength": 40,
+            "type": "string",
+            "description": "Feed source to be marked as read"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model to stop a follow feed"
+      },
+      "AnswerCreateModel": {
+        "type": "object",
+        "properties": {
+          "answer": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model to create an answer"
+      },
+      "SchoolCreateModel": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 250,
+            "type": "string"
+          },
+          "placesDetailsResponse": {
+            "$ref": "#/components/schemas/PlacesDetailsResponse"
+          }
+        },
+        "additionalProperties": false,
+        "description": "model for user to create school"
+      },
+      "SchoolDataEntity": {
+        "type": "object",
+        "properties": {
+          "school": {
+            "$ref": "#/components/schemas/SchoolEntity"
+          },
+          "city": {
+            "$ref": "#/components/schemas/CityEntity"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "description": "`Token only!!!` - without `Bearer_` prefix",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "apikey": {
+        "type": "apiKey",
+        "description": "ApiKey",
+        "name": "X-Api-Key",
+        "in": "header"
+      },
+      "gcloudCron": {
+        "type": "apiKey",
+        "description": "CronEngine",
+        "name": "X-Appengine-Cron",
+        "in": "header"
+      }
+    }
+  }
+}
