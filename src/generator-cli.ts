@@ -29,9 +29,8 @@ async function main(): Promise<void> {
         .help()
         .wrap(null)
         .usage('Generates Angular ReactiveForms from an OpenAPI v2 or v3 spec.\n\n Usage: $0 -i <spec> -o <path>')
-        .example('ngx-form-generator -i https://petstore.swagger.io/v2/swagger.json -o petstore-forms')
-        .example('ngx-form-generator -i https://petstore.swagger.io/v2/swagger.yaml -o petstore-forms')
-        .example('npx ngx-form-generator -i swagger.json -o project/form/src/lib')
+        .example('ngx-openapi-form-generator -i https://petstore.swagger.io/v2/swagger.json -o petstore-forms')
+        .example('ngx-openapi-form-generator -i https://petstore.swagger.io/v2/swagger.yaml -o petstore-forms')
         .alias('help', 'h').argv;
 
     await FormOpenapiGenerator.from({

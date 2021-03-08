@@ -5,7 +5,7 @@
   "main": "dist/generator-lib.js",
   "repository": "github:humbertda/ngx-openapi-form-generator",
   "bin": {
-    "ngx-form-generator": "dist/generator-cli.js"
+    "ngx-openapi-form-generator": "dist/generator-cli.js"
   },
   "scripts": {
     "test": "npm run build && jasmine dist/*.spec.js",
