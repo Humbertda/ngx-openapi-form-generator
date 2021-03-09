@@ -1,8 +1,8 @@
 {
   "name": "ngx-openapi-form-generator",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Generates Angular ReactiveForm factories based on a Swagger or OpenAPI definition",
-  "main": "dist/generator-lib.js",
+  "main": "dist/index.js",
   "repository": "github:humbertda/ngx-openapi-form-generator",
   "bin": {
     "ngx-openapi-form-generator": "dist/generator-cli.js"
