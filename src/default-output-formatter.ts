@@ -8,7 +8,7 @@
 
 import {Project} from 'ts-morph';
 import {OutputFormatter} from './output-formatter';
-import {EntityForm, GeneratorResult} from './models';
+import {EntityForm, GeneratorResult, Property} from './models';
 import {OutputFormatterOptions} from './output-formatter-options';
 import camelcase from 'camelcase';
 import prettier from 'prettier';
@@ -39,7 +39,7 @@ export class DefaultOutputFormatter implements OutputFormatter {
             const file = this.options.filePrefix + camelcase(entity.entityName) + this.options.fileSuffix;
             const fileName =  file + '.ts';
             const content = this.makeContent(entity);
-            indexContent += `export * from './${file}';
+            indexContent += `export { ${this.getTemplateName(entity)}, ${this.getFactoryName(entity)} } from './${file}';
 `;
             fileMap.set(fileName, this.formatContent(content));
         });
@@ -54,18 +54,66 @@ export class DefaultOutputFormatter implements OutputFormatter {
         return prettier.format(content, this.options.tslintOptions);
     }
 
+    private static format(prop: Property): string {
+        switch (prop.type) {
+            case 'number':
+                return `'${prop.name}': ${prop.value}`
+            case 'string':
+                return `'${prop.name}': '${prop.value}'`
+            case 'boolean':
+                return `'${prop.name}': ${prop.value}`
+            default:
+                throw new Error('out of range');
+        }
+    }
+
+    private getTemplateName(entity: EntityForm): string {
+        return camelcase(entity.entityName) + 'Template';
+    }
+
+    private getFactoryName(entity: EntityForm): string {
+        return camelcase(entity.entityName, {pascalCase: true}) + 'Factory';
+    }
+
     private makeContent(entity: EntityForm): string {
-        let fields: string[] = [];
+        const lineSep = `
+                 `;
+        let factoryFields: string[] = [];
+        let templateFields: string[] = [];
+        let imports = new Map<string, string[]>();
+        imports.set('@angular/forms', ['FormGroup', 'FormBuilder'])
         entity.fields.forEach(o => {
-            fields.push(`'${o.fieldName}': [${o.validators.join(', ')}]`);
+            factoryFields.push(`'${o.fieldName}': [${o.validators.map(o => o.definition).join(', ')}]`);
+            templateFields.push(`'${o.fieldName}': {
+                ${o.properties.map(o => DefaultOutputFormatter.format(o)).join(',' + lineSep)}
+            }`);
+            o.validators.forEach(prop => {
+                if (!imports.has(prop.import.path)) {
+                    imports.set(prop.import.path, []);
+                }
+                const cRef = imports.get(prop.import.path);
+                if (cRef != null) {
+                    if(cRef.indexOf(prop.import.name) < 0) {
+                        cRef.push(prop.import.name);
+                    }
+                }
+            })
+        });
+        let importsValues: string[] = [];
+        imports.forEach((value, key) => {
+            importsValues.push(`import {${value.join(', ')}} from '${key}';`);
         });
 
-        return `import {FormGroup, Validators, FormBuilder} from '@angular/forms';
+        return `${importsValues.join(lineSep)}
         
-        export class ${camelcase(entity.entityName, {pascalCase: true})}Factory {
+        export const ${this.getTemplateName(entity)} = {
+            ${templateFields.join(',' + lineSep)}
+        }
+        
+        export class ${this.getFactoryName(entity)} {
         
             private readonly _fields = {
-                ${fields.join(`,
+                ${factoryFields.join(`,
                  `)}
             };
             

@@ -6,10 +6,10 @@
  * Copyright (c) 2021 humbertda
  */
 
-import {Definition, emailRule, maxLengthRule, minLengthRule, patternRule, requiredRule, Rule} from './rules';
+import {Definition, emailRule, maxLengthRule, minLengthRule, patternRule, requiredRule} from './rules';
 import {OpenAPI, OpenAPIV2, OpenAPIV3} from 'openapi-types';
 import SwaggerParser from '@apidevtools/swagger-parser';
-import {EntityForm, Field, FormOpenApiGeneratorOption, GeneratorResult} from './models';
+import {EntityForm, Field, FormOpenApiGeneratorOption, GeneratorResult, Rule, RuleResult} from './models';
 
 export class FormOpenapiGenerator {
 
@@ -114,16 +114,36 @@ export class FormOpenapiGenerator {
     }
 
     private makeField(fieldName: string, definition: Definition): Field {
-        return {
+        const ruleResults = this.makeFieldRules(fieldName, definition);
+        const res: Field = {
             fieldName: fieldName,
-            validators: this.makeFieldRules(fieldName, definition)
+            validators: [],
+            properties: []
         }
+        ruleResults.forEach(itm => {
+            if (itm.validators != null) {
+                itm.validators.forEach(validator => {
+                    res.validators.push(validator);
+                })
+            }
+            if (itm.properties != null) {
+                itm.properties.forEach(property => {
+                    res.properties.push(property);
+                })
+            }
+        });
+        return res;
     }
 
-    private makeFieldRules(fieldName: string, definition: Definition): string[] {
-        return this.rules
-            .map(rule => rule(fieldName, definition))
-            .filter(item => item != '');
+    private makeFieldRules(fieldName: string, definition: Definition): RuleResult[] {
+        const res: RuleResult[] = [];
+        this.rules.forEach(rule => {
+            const ruleResult = rule(fieldName, definition);
+            if(ruleResult != null) {
+                res.push(ruleResult);
+            }
+        })
+        return res;
     }
 }
 

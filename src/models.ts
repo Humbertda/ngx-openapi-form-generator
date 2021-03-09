@@ -7,11 +7,12 @@
  */
 
 import {OutputFormatter} from './output-formatter';
-import {Rule} from './rules';
+import {Definition} from './rules';
 
 export interface Field {
     fieldName: string;
-    validators: string[];
+    validators: Validator[];
+    properties: Property[];
 }
 
 export interface EntityForm {
@@ -28,3 +29,26 @@ export interface FormOpenApiGeneratorOption {
     output: OutputFormatter;
     extraRules?: Rule[];
 }
+
+export type Property = {
+    type: 'number'|'string'|'boolean';
+    name: string;
+    value: string;
+}
+
+export type Validator = {
+    definition: string;
+    import: Import;
+}
+
+export type Import = {
+    path: string;
+    name: string;
+};
+
+export type RuleResult = {
+    validators: Validator[]|null;
+    properties: Property[]|null;
+};
+
+export type Rule = (fieldName: string, properties: Definition) => RuleResult|null;
