@@ -12,5 +12,6 @@ export interface OutputFormatterOptions {
     filePrefix: string;
     fileSuffix: string;
     outputFolder: string;
+    templatePropertyInterfaceName: string;
     tslintOptions: Partial<RequiredOptions>;
 }

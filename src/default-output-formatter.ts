@@ -22,6 +22,7 @@ export class DefaultOutputFormatter implements OutputFormatter {
                 filePrefix: '',
                 fileSuffix: '',
                 outputFolder: './',
+                templatePropertyInterfaceName: 'TemplateProperty',
                 tslintOptions: {
                     parser: 'typescript',
                     singleQuote: true,
@@ -34,15 +35,36 @@ export class DefaultOutputFormatter implements OutputFormatter {
 
     public async handleOutput(content: GeneratorResult): Promise<void> {
         const fileMap = new Map<string, string>();
+        const properties: Property[] = [];
         let indexContent = '';
         content.entityForms.forEach(entity => {
             const file = this.options.filePrefix + camelcase(entity.entityName) + this.options.fileSuffix;
             const fileName =  file + '.ts';
             const content = this.makeContent(entity);
-            indexContent += `export { ${this.getTemplateName(entity)}, ${this.getFactoryName(entity)} } from './${file}';
+            indexContent += `export { ${this.getTemplateConstantName(entity)}, ${this.getTemplateInterfaceName(entity)}, ${this.getFactoryName(entity)} } from './${file}';
 `;
-            fileMap.set(fileName, this.formatContent(content));
+            fileMap.set(fileName, this.formatContent(content.content));
+            content.properties.forEach(p => {
+                if (properties.findIndex(o => o.name === p.name) < 0) {
+                    properties.push(p);
+                }
+            });
         });
+
+        if (properties.length) {
+            let propContent = '';
+            properties.forEach(p => {
+                propContent += `${p.name}?: ${p.type};
+`;
+            });
+            propContent = `export interface ${this.options.templatePropertyInterfaceName} {
+                ${propContent}
+            };`;
+            fileMap.set('templateProperty.ts', this.formatContent(propContent));
+            indexContent += `export { ${this.options.templatePropertyInterfaceName} } from './templateProperty';
+`;
+        }
+
         fileMap.set('index.ts', this.formatContent(indexContent));
 
         for(let file of fileMap.entries()) {
@@ -54,7 +76,7 @@ export class DefaultOutputFormatter implements OutputFormatter {
         return prettier.format(content, this.options.tslintOptions);
     }
 
-    private static format(prop: Property): string {
+    private static formatTemplateValue(prop: Property): string {
         switch (prop.type) {
             case 'number':
                 return `'${prop.name}': ${prop.value}`
@@ -67,7 +89,11 @@ export class DefaultOutputFormatter implements OutputFormatter {
         }
     }
 
-    private getTemplateName(entity: EntityForm): string {
+    private getTemplateInterfaceName(entity: EntityForm): string {
+        return camelcase(entity.entityName, {pascalCase: true}) + 'Template';
+    }
+
+    private getTemplateConstantName(entity: EntityForm): string {
         return camelcase(entity.entityName) + 'Template';
     }
 
@@ -75,18 +101,25 @@ export class DefaultOutputFormatter implements OutputFormatter {
         return camelcase(entity.entityName, {pascalCase: true}) + 'Factory';
     }
 
-    private makeContent(entity: EntityForm): string {
+    private makeContent(entity: EntityForm): ContentResult {
+        const properties: Property[] = [];
         const lineSep = `
                  `;
         let factoryFields: string[] = [];
         let templateFields: string[] = [];
+        let templateContractFields: string[] = [];
         let imports = new Map<string, string[]>();
         imports.set('@angular/forms', ['FormGroup', 'FormBuilder'])
+        imports.set('./templateProperty', ['TemplateProperty'])
         entity.fields.forEach(o => {
             factoryFields.push(`'${o.fieldName}': [${o.validators.map(o => o.definition).join(', ')}]`);
             templateFields.push(`'${o.fieldName}': {
-                ${o.properties.map(o => DefaultOutputFormatter.format(o)).join(',' + lineSep)}
+                ${o.properties.map(s => DefaultOutputFormatter.formatTemplateValue(s)).join(',' + lineSep)}
             }`);
+            templateContractFields.push(`${o.fieldName}: ${this.options.templatePropertyInterfaceName};`);
+            o.properties.forEach(p => {
+                properties.push(p);
+            });
             o.validators.forEach(prop => {
                 if (!imports.has(prop.import.path)) {
                     imports.set(prop.import.path, []);
@@ -104,9 +137,13 @@ export class DefaultOutputFormatter implements OutputFormatter {
             importsValues.push(`import {${value.join(', ')}} from '${key}';`);
         });
 
-        return `${importsValues.join(lineSep)}
+        const content = `${importsValues.join(lineSep)}
         
-        export const ${this.getTemplateName(entity)} = {
+        export interface ${this.getTemplateInterfaceName(entity)} {
+            ${templateContractFields.join(lineSep)}
+        }
+        
+        export const ${this.getTemplateConstantName(entity)}: ${this.getTemplateInterfaceName(entity)} = {
             ${templateFields.join(',' + lineSep)}
         }
         
@@ -126,6 +163,10 @@ export class DefaultOutputFormatter implements OutputFormatter {
             }
         }
         `;
+        return {
+            content: content,
+            properties: properties
+        }
     }
 
     private async saveFile(file: string, fileName: string): Promise<void> {
@@ -137,3 +178,7 @@ export class DefaultOutputFormatter implements OutputFormatter {
 
 }
 
+type ContentResult = {
+    content: string;
+    properties: Property[]
+}
