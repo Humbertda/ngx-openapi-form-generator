@@ -75,7 +75,9 @@ export class FormOpenapiGenerator {
             if (typeof definition.type === 'string') {
                 switch (definition.type) {
                     case 'object':
-                        const fields = Object.keys(definition.properties);
+                        const fields = definition.properties != null
+                            ? Object.keys(definition.properties)
+                            : [];
                         const fieldsBody = fields
                             .map(fieldName => this.makeField(fieldName, definition))
                             .filter(item => item.fieldName !== '');

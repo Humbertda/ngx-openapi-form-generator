@@ -51,21 +51,26 @@ export class DefaultOutputFormatter implements OutputFormatter {
             });
         });
 
-        if (properties.length) {
             let propContent = '';
+        if (properties.length) {
             properties.forEach(p => {
                 propContent += `${p.name}?: ${p.type};
 `;
             });
+        }
             propContent = `export interface ${this.options.templatePropertyInterfaceName} {
                 ${propContent}
             };`;
             fileMap.set('templateProperty.ts', this.formatContent(propContent));
             indexContent += `export { ${this.options.templatePropertyInterfaceName} } from './templateProperty';
 `;
-        }
 
         fileMap.set('index.ts', this.formatContent(indexContent));
+
+        let typesContent = `import { ValidatorFn } from '@angular/forms';
+        export type PropertyValidator = ValidatorFn | ValidatorFn[]
+`;
+        fileMap.set('types.ts', this.formatContent(typesContent));
 
         for(let file of fileMap.entries()) {
             await this.saveFile(file[1], file[0])
@@ -111,6 +116,7 @@ export class DefaultOutputFormatter implements OutputFormatter {
         let imports = new Map<string, string[]>();
         imports.set('@angular/forms', ['FormGroup', 'FormBuilder'])
         imports.set('./templateProperty', ['TemplateProperty'])
+        imports.set('./types', ['PropertyValidator'])
         entity.fields.forEach(o => {
             factoryFields.push(`'${o.fieldName}': [${o.validators.map(o => o.definition).join(', ')}]`);
             templateFields.push(`'${o.fieldName}': {
@@ -149,7 +155,7 @@ export class DefaultOutputFormatter implements OutputFormatter {
         
         export class ${this.getFactoryName(entity)} {
         
-            private readonly _fields = {
+            private readonly _fields: { [id: string] : PropertyValidator; } = {
                 ${factoryFields.join(`,
                  `)}
             };

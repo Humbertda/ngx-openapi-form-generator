@@ -22,5 +22,14 @@ describe('FormOpenapiGenerator', () => {
             }),
             specFileOrUrlPath: 'src/fixtures/example1.json'
         })
+
+        await FormOpenapiGenerator.from({
+            output: new DefaultOutputFormatter({
+                fileSuffix: '_suffix',
+                filePrefix: 'prefix_',
+                outputFolder: './test_output/example2/'
+            }),
+            specFileOrUrlPath: 'src/fixtures/example2.json'
+        })
     });
 });
